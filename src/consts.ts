@@ -2,11 +2,11 @@ import type { IconMap, SocialLink, Site } from '@/types'
 
 export const SITE: Site = {
   title: 'Daniel Benassayag',
-  description: 'Tech blog and thoughts',
+  description: 'Writing, projects, and research.',
   href: 'https://dbenassayag.xyz',
   author: 'daniel-benassayag',
   locale: 'en-US',
-  featuredPostCount: 2,
+  featuredPostCount: 4,
   postsPerPage: 3,
 }
 
@@ -16,16 +16,16 @@ export const NAV_LINKS: SocialLink[] = [
     label: 'blog',
   },
   {
-    href: '/authors',
-    label: 'authors',
-  },
-  {
-    href: '/about',
-    label: 'about',
+    href: '/#projects',
+    label: 'projects',
   },
 ]
 
 export const SOCIAL_LINKS: SocialLink[] = [
+  {
+    href: 'https://github.com/danielbenassaya',
+    label: 'GitHub',
+  },
   {
     href: 'https://x.com/DBenassaya',
     label: 'Twitter',
@@ -33,10 +33,6 @@ export const SOCIAL_LINKS: SocialLink[] = [
   {
     href: 'mailto:danielbenassaya2626@gmail.com',
     label: 'Email',
-  },
-  {
-    href: 'https://dbenassayag.xyz',
-    label: 'Website',
   },
   {
     href: '/rss.xml',

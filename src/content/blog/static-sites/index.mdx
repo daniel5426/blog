@@ -1,0 +1,32 @@
+---
+title: 'Why static still wins (sample)'
+description: 'Demo post: opinionated notes on static generation, caching, and simplicity—filler text for layout review.'
+date: 2026-03-20
+tags: ['dev', 'web']
+authors: ['daniel-benassayag']
+draft: false
+---
+
+Static sites are not a compromise. They are a deliberate contract: build once, serve forever, let the edge cache do the heavy lifting.
+
+### What you gain
+
+1. **Predictable performance** — no cold starts for HTML that already exists.
+2. **Fewer moving parts** — fewer queues, fewer secrets, fewer 3 a.m. pages.
+3. **Versioned content** — posts live next to the code in Git, which is honest about history.
+
+### What you give up
+
+- Dynamic per-request personalization without extra services.
+- Instant publishing without a build step (unless you add SSR or a CMS with webhooks).
+
+### Practical takeaway
+
+If your goal is a personal site that loads fast and ages well, static generation is usually enough. This paragraph exists to show how **Glass** and **Vapor** treat multi-section articles when the page gets longer than one screen.
+
+```bash
+npm run build
+npm run preview
+```
+
+Ship the `dist/` folder or attach your host’s Git integration and forget about it until the next post.

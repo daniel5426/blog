@@ -1,0 +1,57 @@
+---
+title: 'Style playground'
+description: 'Sample article with headings, lists, code, math, and quotes so UI themes can be judged properly.'
+date: 2026-04-01
+tags: ['site', 'demo']
+authors: ['daniel-benassayag']
+draft: false
+---
+
+This page exists to stress-test typography, spacing, and motion across the theme presets. Scroll through once in **Default**, then switch to **Darkroom**, **Manuscript**, **Glass**, **Brutalist**, or **Vapor** from the header control.
+
+## Section with hierarchy
+
+### Third-level heading
+
+Smaller heading rhythm matters for long reads. Here is a paragraph with a [link to the blog index](/blog/) and another to [MDN](https://developer.mozilla.org/) so underlines and hover states are visible.
+
+#### Fourth level
+
+Inline code looks like `pnpm build` or `getCollection('blog')`. A short TypeScript snippet:
+
+```ts
+type Post = {
+  title: string
+  date: Date
+}
+
+export function sortByDate(posts: Post[]) {
+  return [...posts].sort((a, b) => b.date.getTime() - a.date.getTime())
+}
+```
+
+---
+
+## Lists and emphasis
+
+Unordered:
+
+- First item with **bold** and *italic*
+- Second item with nested ideas
+- Third item closing the group
+
+Ordered:
+
+1. Warm up the build
+2. Run `astro check`
+3. Ship when green
+
+> A blockquote should feel distinct from body copy: enough contrast, comfortable line length, and a clear left edge. Themes style this differently—especially Manuscript and Brutalist.
+
+## A tiny equation
+
+For themes that render math, the quadratic formula is $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$.
+
+## Closing
+
+If something looks wrong in only one preset, tweak `src/styles/ui-styles.css` under that `data-ui-style` block. Color palettes remain independent: try **Ocean Breeze** with **Glass**, or **High Contrast** with **Brutalist**.

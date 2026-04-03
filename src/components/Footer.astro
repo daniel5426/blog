@@ -1,6 +1,7 @@
 ---
 import { Separator } from '@/components/ui/separator'
 import { SOCIAL_LINKS } from '@/consts'
+import { PaletteSelector } from '@/components/PaletteSelector'
 import Link from './Link.astro'
 import SocialIcons from './SocialIcons.astro'
 ---
@@ -22,5 +23,8 @@ import SocialIcons from './SocialIcons.astro'
       >!
     </p>
   </div>
-  <SocialIcons links={SOCIAL_LINKS} />
+  <div class="flex items-center gap-1 sm:gap-2">
+    <PaletteSelector client:load dropUp />
+    <SocialIcons links={SOCIAL_LINKS} />
+  </div>
 </footer>

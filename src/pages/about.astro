@@ -17,9 +17,9 @@ const projects = await getAllProjects()
     <div class="min-w-full">
       <div class="prose mb-8">
         <p class="mt-0">
-          Hi, I'm Daniel Benassayag. Welcome to my tech blog where I share thoughts,
-          experiences, and insights about technology, development, and the things
-          that interest me.
+          Hi, I'm Daniel Benassayag. This site is my home on the web for writing,
+          project highlights, and research notes — useful context if you are
+          considering me for a role or collaboration.
         </p>
         <p>
           This blog is built with <Link
@@ -34,9 +34,18 @@ const projects = await getAllProjects()
         </p>
       </div>
 
-      <h2 class="mb-4 text-2xl font-medium">Example Projects Listing</h2>
+      <h2 class="mb-4 text-2xl font-medium">Projects</h2>
       <div class="flex flex-col gap-4">
-        {projects.map((project) => <ProjectCard project={project} />)}
+        {
+          projects.length > 0 ? (
+            projects.map((project) => <ProjectCard project={project} />)
+          ) : (
+            <p class="text-muted-foreground text-sm">
+              Project highlights will appear here as you add them under{' '}
+              <code class="text-foreground">src/content/projects</code>.
+            </p>
+          )
+        }
       </div>
     </div>
   </section>

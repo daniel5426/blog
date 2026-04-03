@@ -279,6 +279,8 @@ export const palettes: Palette[] = [
   },
 ]
 
+const DEFAULT_PALETTE_ID = 8
+
 export function applyPalette(paletteId: number) {
   if (typeof window === 'undefined') return
   
@@ -300,10 +302,11 @@ export function initPalette() {
   if (typeof window === 'undefined') return
   
   const stored = localStorage.getItem('palette')
-  const paletteId = stored ? parseInt(stored, 10) : null
+  const parsedPaletteId = stored ? parseInt(stored, 10) : NaN
+  const paletteId = palettes.find((p) => p.id === parsedPaletteId)
+    ? parsedPaletteId
+    : DEFAULT_PALETTE_ID
 
-  if (paletteId && palettes.find((p) => p.id === paletteId)) {
-    applyPalette(paletteId)
-  }
+  applyPalette(paletteId)
 }
 

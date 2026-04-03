@@ -1,20 +1,29 @@
 import * as React from 'react'
 import { Button } from '@/components/ui/button'
-import { palettes, applyPalette, initPalette } from '@/lib/palettes'
+import { palettes, applyPalette } from '@/lib/palettes'
 import { cn } from '@/lib/utils'
 
-export function PaletteSelector() {
+type PaletteSelectorProps = {
+  dropUp?: boolean
+}
+
+export function PaletteSelector({ dropUp = false }: PaletteSelectorProps) {
+  const defaultPaletteId = 8
   const [isOpen, setIsOpen] = React.useState(false)
-  const [selectedPalette, setSelectedPalette] = React.useState<number | null>(null)
+  const [selectedPalette, setSelectedPalette] = React.useState<number | null>(
+    null,
+  )
   const dropdownRef = React.useRef<HTMLDivElement>(null)
 
   React.useEffect(() => {
     const stored = localStorage.getItem('palette')
-    const paletteId = stored ? parseInt(stored, 10) : null
-    if (paletteId && palettes.find((p) => p.id === paletteId)) {
-      setSelectedPalette(paletteId)
-      initPalette()
-    }
+    const parsedPaletteId = stored ? parseInt(stored, 10) : NaN
+    const paletteId = palettes.find((p) => p.id === parsedPaletteId)
+      ? parsedPaletteId
+      : defaultPaletteId
+
+    setSelectedPalette(paletteId)
+    applyPalette(paletteId)
   }, [])
 
   React.useEffect(() => {
@@ -52,22 +61,17 @@ export function PaletteSelector() {
   function handlePaletteSelect(paletteId: number) {
     setSelectedPalette(paletteId)
     applyPalette(paletteId)
-    setIsOpen(false)
   }
-
-  const currentPalette = selectedPalette
-    ? palettes.find((p) => p.id === selectedPalette)
-    : null
 
   return (
     <div className="relative" ref={dropdownRef}>
       <Button
         variant="ghost"
         size="icon"
-        title="Select color palette"
+        title="Color palette"
         className="-my-2 -me-2 size-8"
         onClick={() => setIsOpen(!isOpen)}
-        aria-label="Select color palette"
+        aria-label="Color palette"
         aria-expanded={isOpen}
       >
         <svg
@@ -81,26 +85,35 @@ export function PaletteSelector() {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+            d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
           />
         </svg>
-        <span className="sr-only">Select color palette</span>
+        <span className="sr-only">Color palette</span>
       </Button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-64 rounded-md border bg-background shadow-lg">
-          <div className="max-h-96 overflow-y-auto p-2">
-            <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
-              Color Palettes
+        <div
+          className={cn(
+            'absolute right-0 z-50 max-h-[min(28rem,calc(100vh-5rem))] w-80 overflow-y-auto rounded-md border bg-background shadow-lg',
+            dropUp ? 'bottom-full mb-2' : 'top-full mt-2',
+          )}
+        >
+          <div className="p-2">
+            <div className="px-2 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Color palette
             </div>
             {palettes.map((palette) => (
               <button
                 key={palette.id}
-                onClick={() => handlePaletteSelect(palette.id)}
+                type="button"
+                onClick={() => {
+                  handlePaletteSelect(palette.id)
+                  setIsOpen(false)
+                }}
                 className={cn(
                   'w-full rounded-sm px-2 py-1.5 text-left text-sm transition-colors',
                   'hover:bg-muted focus:bg-muted focus:outline-none',
-                  selectedPalette === palette.id && 'bg-muted font-medium'
+                  selectedPalette === palette.id && 'bg-muted font-medium',
                 )}
               >
                 <div className="font-medium">{palette.name}</div>
@@ -115,4 +128,3 @@ export function PaletteSelector() {
     </div>
   )
 }
-

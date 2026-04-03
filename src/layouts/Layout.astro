@@ -10,9 +10,10 @@ import { cn } from '@/lib/utils'
 
 interface Props {
   class?: string
+  isHome?: boolean
 }
 
-const { class: className } = Astro.props
+const { class: className, isHome = false } = Astro.props
 ---
 
 <!doctype html>
@@ -24,13 +25,17 @@ const { class: className } = Astro.props
     <slot name="head" />
   </Head>
   <body class="flex h-fit min-h-screen flex-col gap-y-6 font-sans">
-    <header
-      class="bg-background/50 sticky top-0 z-50 divide-y backdrop-blur-sm xl:divide-none"
-    >
-      <Header />
-      <slot name="subposts-navigation" />
-      <slot name="table-of-contents" />
-    </header>
+    {
+      !isHome && (
+        <header
+          class="bg-background/50 sticky top-0 z-50 divide-y backdrop-blur-sm xl:divide-none"
+        >
+          <Header isHome={isHome} />
+          <slot name="subposts-navigation" />
+          <slot name="table-of-contents" />
+        </header>
+      )
+    }
     <main
       class={cn('w-full mx-auto flex grow flex-col gap-y-6 px-4', className)}
     >
@@ -40,10 +45,23 @@ const { class: className } = Astro.props
     <script is:inline>
       (() => {
         if (typeof window === 'undefined') return
-        const stored = localStorage?.getItem('palette')
-        if (!stored) return
-        
-        const paletteId = parseInt(stored, 10)
+        const root = document.documentElement
+        const getTheme = () => {
+          const storedTheme = localStorage?.getItem('theme') ?? ''
+          if (storedTheme === 'dark' || storedTheme === 'light') return storedTheme
+          return window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light'
+        }
+
+        const applyStoredPalette = () => {
+          const defaultPaletteId = 8
+          const stored = localStorage?.getItem('palette')
+          const parsedPaletteId = stored ? parseInt(stored, 10) : NaN
+          const paletteId = Number.isNaN(parsedPaletteId)
+            ? defaultPaletteId
+            : parsedPaletteId
+
         const palettes = [
           {
             id: 1,
@@ -295,17 +313,40 @@ const { class: className } = Astro.props
               '--ring': 'oklch(0.70 0.25 15)',
             },
           },
-        ]
-        
-        const palette = palettes.find(p => p.id === paletteId)
-        if (!palette) return
-        
-        const root = document.documentElement
-        const isDark = root.getAttribute('data-theme') === 'dark'
-        const colors = isDark ? palette.dark : palette.light
-        
-        Object.entries(colors).forEach(([property, value]) => {
-          root.style.setProperty(property, value)
+          ]
+
+          const palette = palettes.find((p) => p.id === paletteId)
+          if (!palette) return
+
+          const isDark = root.getAttribute('data-theme') === 'dark'
+          const colors = isDark ? palette.dark : palette.light
+
+          Object.entries(colors).forEach(([property, value]) => {
+            root.style.setProperty(property, value)
+          })
+
+          if (!stored || Number.isNaN(parsedPaletteId)) {
+            localStorage.setItem('palette', String(defaultPaletteId))
+          }
+        }
+
+        root.setAttribute('data-theme', getTheme())
+        applyStoredPalette()
+
+        if (!window['__paletteThemeSync']) {
+          const observer = new MutationObserver(() => {
+            applyStoredPalette()
+          })
+          observer.observe(root, {
+            attributes: true,
+            attributeFilter: ['data-theme'],
+          })
+          window['__paletteThemeSync'] = true
+        }
+
+        document.addEventListener('astro:after-swap', () => {
+          root.setAttribute('data-theme', getTheme())
+          applyStoredPalette()
         })
       })()
     </script>

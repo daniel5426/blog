@@ -1,68 +1,176 @@
 ---
-import BlogCard from '@/components/BlogCard.astro'
 import Link from '@/components/Link.astro'
 import PageHead from '@/components/PageHead.astro'
-import { buttonVariants } from '@/components/ui/button'
-import { SITE } from '@/consts'
+import ThemeToggle from '@/components/ThemeToggle.astro'
+import { Badge } from '@/components/ui/badge'
+import { NAV_LINKS } from '@/consts'
 import Layout from '@/layouts/Layout.astro'
-import { getRecentPosts } from '@/lib/data-utils'
+import { getRecentPosts, getAllProjects } from '@/lib/data-utils'
+import { formatDate } from '@/lib/utils'
+import { Icon } from 'astro-icon/components'
 
-const blog = await getRecentPosts(SITE.featuredPostCount)
+const posts = await getRecentPosts(4)
+const projects = await getAllProjects()
 ---
 
-<Layout class="max-w-3xl">
+<Layout class="max-w-5xl" isHome>
   <PageHead slot="head" title="Home" />
-  <section class="rounded-lg border">
-    <div class="flex flex-col space-y-1.5 p-6">
-      <h3 class="text-3xl leading-none font-medium">Daniel Benassayag</h3>
-      <p class="text-muted-foreground text-sm">
-        Tech blog and thoughts
+
+  <section class="pt-3 sm:pt-5">
+    <div class="grid grid-cols-[72px_1fr] gap-x-4 gap-y-0 sm:grid-cols-[96px_1fr] sm:gap-x-5 lg:grid-cols-[170px_1fr] lg:gap-x-6 lg:gap-y-3">
+      <img
+        src="/static/profile.jpeg"
+        alt=""
+        width="170"
+        height="170"
+        class="row-span-4 size-full rounded-md object-cover"
+      />
+      <div class="col-start-2 row-start-1 flex items-start justify-between sm:gap-6">
+        <h1 class="text-3xl font-medium tracking-tight min-[390px]:text-3xl sm:text-2xl lg:text-5xl">
+          Daniel <span class="hidden lg:inline">Benassayag</span>
+        </h1>
+        <div class="flex shrink-0 items-center gap-1.5 sm:gap-3">
+          <nav class="flex items-center gap-2 text-xs min-[390px]:gap-3 sm:gap-5 sm:text-sm">
+            {
+              NAV_LINKS.map((item) => (
+                <Link
+                  href={item.href}
+                  class="text-foreground/70 hover:text-foreground capitalize transition-colors"
+                >
+                  {item.label}
+                </Link>
+              ))
+            }
+          </nav>
+          <ThemeToggle transition:persist />
+        </div>
+      </div>
+      <p class="col-start-2 row-start-2 text-3xl font-medium tracking-tight sm:text-3xl lg:hidden">
+        Benassayag
       </p>
-    </div>
-    <div class="p-6 pt-0">
-      <p class="text-muted-foreground mb-2 text-sm">
-        Welcome to my blog where I share thoughts, experiences, and insights about
-        technology, development, and the things that interest me. This blog is built
-        with <Link
-          href="https://astro.build"
-          class="text-foreground"
-          external
-          underline>Astro</Link
-        >, <Link
-          href="https://tailwindcss.com"
-          class="text-foreground"
-          external
-          underline>Tailwind</Link
-        >, and <Link
-          href="https://ui.shadcn.com"
-          class="text-foreground"
-          external
-          underline>shadcn/ui</Link
-        >.
+      <p class="text-muted-foreground pt-3 col-span-2 max-w-2xl leading-relaxed lg:col-span-1 lg:col-start-2">
+        I work on things, write about them, and share what I learn.
+        This site is where I keep notes, project highlights, and research
+        — useful context if you are considering me for a role or collaboration.
       </p>
     </div>
   </section>
-  <section class="flex flex-col gap-y-4">
-    <h2 class="text-2xl font-medium">Latest posts</h2>
-    <ul class="flex flex-col gap-y-4">
-      {
-        blog.map((post) => (
-          <li>
-            <BlogCard entry={post} />
-          </li>
-        ))
-      }
-    </ul>
-    <div class="flex justify-center">
-      <Link
-        href="/blog"
-        class={buttonVariants({ variant: 'ghost' }) + ' group'}
-      >
-        See all posts <span
-          class="ml-1.5 transition-transform group-hover:translate-x-1"
-          >&rarr;</span
+
+  <div class="grid grid-cols-1 gap-x-12 gap-y-10 lg:grid-cols-5">
+    <section class="flex flex-col gap-4 lg:col-span-3">
+      <div class="flex items-baseline justify-between">
+        <h2 class="text-lg font-medium">Writing</h2>
+        <Link
+          href="/blog"
+          class="text-muted-foreground hover:text-foreground text-sm transition-colors"
         >
-      </Link>
-    </div>
-  </section>
+          See all &rarr;
+        </Link>
+      </div>
+      <ul class="flex flex-col divide-y divide-border/50">
+        {
+          posts.map((post) => (
+            <li>
+              <Link
+                href={`/blog/${post.id}`}
+                class="hover:bg-muted/40 -mx-3 flex flex-col gap-1 rounded-md px-3 py-4 transition-colors"
+              >
+                <div class="flex items-baseline justify-between gap-4">
+                  <span class="text-foreground font-medium">
+                    {post.data.title}
+                  </span>
+                  <span class="text-muted-foreground shrink-0 text-xs">
+                    {formatDate(post.data.date)}
+                  </span>
+                </div>
+                <span class="text-muted-foreground text-sm leading-relaxed">
+                  {post.data.description}
+                </span>
+                {post.data.tags && (
+                  <div class="mt-1 flex flex-wrap gap-1.5">
+                    {post.data.tags.map((tag) => (
+                      <span class="text-muted-foreground/70 text-[0.65rem] uppercase tracking-wider">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </Link>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <aside class="flex flex-col gap-10 lg:col-span-2">
+      {
+        projects.length > 0 && (
+          <section id="projects" class="flex flex-col gap-4">
+            <h2 class="text-lg font-medium">Projects</h2>
+            <div class="flex flex-col gap-4">
+              {projects.map((project) => (
+                <Link
+                  href={project.data.link}
+                  class="hover:bg-muted/40 -mx-3 flex flex-col gap-1.5 rounded-md px-3 py-3 transition-colors"
+                  external
+                >
+                  <div class="flex items-center gap-2">
+                    <span class="text-foreground font-medium">
+                      {project.data.name}
+                    </span>
+                    <Icon
+                      name="lucide:arrow-up-right"
+                      class="text-muted-foreground size-3.5"
+                    />
+                  </div>
+                  <p class="text-muted-foreground text-sm leading-relaxed">
+                    {project.data.description}
+                  </p>
+                  {project.data.startDate && (
+                    <span class="text-muted-foreground/60 text-xs">
+                      {formatDate(project.data.startDate)}
+                      {project.data.endDate
+                        ? ` — ${formatDate(project.data.endDate)}`
+                        : ' — Present'}
+                    </span>
+                  )}
+                  {project.data.tags && (
+                    <div class="flex flex-wrap gap-1.5">
+                      {project.data.tags.map((tag: string) => (
+                        <Badge variant="muted" className="text-[0.65rem]">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <section class="flex flex-col gap-3">
+        <h2 class="text-lg font-medium">Get in touch</h2>
+        <p class="text-muted-foreground text-sm leading-relaxed">
+          Reach me at{' '}
+          <Link
+            href="mailto:danielbenassaya2626@gmail.com"
+            class="text-foreground underline underline-offset-2"
+            external
+          >
+            danielbenassaya2626@gmail.com
+          </Link>{' '}
+          or on{' '}
+          <Link
+            href="https://x.com/DBenassaya"
+            class="text-foreground underline underline-offset-2"
+            external
+          >
+            Twitter
+          </Link>.
+        </p>
+      </section>
+    </aside>
+  </div>
 </Layout>
